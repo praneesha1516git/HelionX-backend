@@ -1,0 +1,9 @@
+version: 3
+agent:
+  authtoken: 36bKbxMdUGlmTS4hZRoPFoyZoip_7Vp679YFufGTgdsWgJrDX
+
+endpoints :
+- name : api
+  url : https://arya-comprisable-superprecariously.ngrok-free.dev
+  upstream:
+    url : http://localhost:8000
