@@ -64,27 +64,35 @@ export const createSolarUnit = async(req: Request, res: Response , next: NextFun
     }
 }
 
-export const getSolarUnitForUser = async (req: Request, res: Response , next: NextFunction) => {
-    try {
-         const auth =  getAuth(req);
-         const clerkUserId = auth.userId;
+export const getSolarUnitForUser = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const auth = getAuth(req);
 
-         console.log("Clerk User ID:", clerkUserId);
-
-         // Find the user by clerkUserId
-         const user = await User.findOne({clerkUserId });
-         if (!user) {
-            throw new NotFoundError("User not found");
-         }
-
-         // Find the solar unit by userId
-         const solarUnits = await SolarUnit.findOne({userId : user._id});
-         res.status(200).json(solarUnits);
-
-    } catch (error) {
-        next(error);
+    if (!auth || !auth.userId) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
+
+    const clerkUserId = auth.userId;
+    console.log("Clerk User ID:", clerkUserId);
+
+    const user = await User.findOne({ clerkUserId });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const solarUnits = await SolarUnit.find({ userId: user._id });
+
+    return res.status(200).json(solarUnits);
+  } catch (error) {
+    console.error("getSolarUnitForUser error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };
+
 
  export const updateSolarUnitValidator = (req:Request , res:Response , next:NextFunction) =>{
     const result =UpdateSolarUnitDto.safeParse(req.body); // Validate request body
