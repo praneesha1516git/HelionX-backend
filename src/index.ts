@@ -12,7 +12,7 @@ import { clerkMiddleware } from "@clerk/express";
 import usersRouter from "./api/users";
 
 const server = express();
-server.use(cors({origin:"http://localhost:5173"}));  // Enable CORS
+server.use(cors({origin:process.env.FRONTEND_URL}));  // Enable CORS
 
 server.use(loggerMiddleware);  // Middleware to log requests
 
