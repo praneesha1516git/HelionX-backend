@@ -79,7 +79,7 @@ const saveAnomaly = async (
   const existing = await Anomaly.findOne({
     solarUnitId,
     anomalyType: type,
-    anomayName: name,
+    anomalyName: name,
     detectionTimestamp: { $gte: dayStart, $lt: dayEnd },
   }).lean();
   if (existing) return;
@@ -87,7 +87,7 @@ const saveAnomaly = async (
   await Anomaly.create({
     solarUnitId,
     anomalyType: type,
-    anomayName: name,
+    anomalyName: name,
     severity,
     description: desc,
     detectionTimestamp: ts,
