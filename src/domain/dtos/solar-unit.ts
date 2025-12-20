@@ -22,6 +22,6 @@ export const UpdateSolarUnitDto = z.object ({
 
 // DTO for querying energy generation records with optional grouping and limit
 export const GetAllEnergyGenerationRecordsQueryDto = z.object ({
-    groupBy : z.enum (["date"]).optional(),
-    limit : z.string().min(1),
+    groupBy : z.enum (["date", "hour"]).optional(),
+    limit : z.string().optional(),
 })

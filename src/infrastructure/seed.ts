@@ -11,21 +11,19 @@ async function seed() {
     await connectDB();
 
     // Clear existing data
-
     await SolarUnit.deleteMany({});
-   
- 
-    // Create a new solar unit 
+
+    // Create a new solar unit
     const solarUnit = await SolarUnit.create({
-     
       serialNumber: "SU-0001",
-      installationDate: new Date("2025-10-01"),
+      installationDate: new Date("2025-08-01"),
       capacity: 5000,
       status: "ACTIVE",
     });
 
-
-    console.log(`Database seeded successfully. created solar unit : ${solarUnit.serialNumber}`);
+    console.log(
+      `Database seeded successfully. Created solar unit: ${solarUnit.serialNumber}`
+    );
   } catch (err) {
     console.error("Seeding error:", err);
   } finally {

@@ -84,7 +84,7 @@ export const getSolarUnitForUser = async (
       return res.status(404).json({ message: "User not found" });
     }
 
-    const solarUnits = await SolarUnit.find({ userId: user._id });
+    const solarUnits = await SolarUnit.find({ userId: user._id.toString() });
 
     return res.status(200).json(solarUnits);
   } catch (error) {

@@ -32,7 +32,7 @@ export const syncMiddleware = async (
             throw new NotFoundError("User not found");
         }
         
-        const solarUnit = await SolarUnit.findOne({ userId: user._id });
+        const solarUnit = await SolarUnit.findOne({ userId: user._id.toString() });
         if (!solarUnit) {
             throw new NotFoundError("Solar unit not found");
         }

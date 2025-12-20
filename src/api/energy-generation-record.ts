@@ -4,6 +4,6 @@ import { authenticationMiddleware } from "./middlewares/authentication-middlewar
 
 const energyGenerationRecordRouter = express.Router();
 
-energyGenerationRecordRouter.route("/solar-unit/:id").get( authenticationMiddleware, getAllEnergyGenerationRecordsBySolarUnitId);
+energyGenerationRecordRouter.route("/solar-unit/:id").get( authenticationMiddleware,getAllEnergyGenerationRecordsBySolarUnitId);
 
 export default energyGenerationRecordRouter;
