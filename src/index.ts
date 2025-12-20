@@ -19,7 +19,8 @@ import paymentRouter from "./api/payment";
 import anomalyRouter from "./api/anomaly";
 
 const server = express();
-const frontendUrl = process.env.FRONTEND_URL ;
+// Normalise to avoid trailing slashes causing CORS origin mismatches
+const frontendUrl = process.env.FRONTEND_URL?.replace(/\/$/, "");
 server.use(cors({ origin: frontendUrl }));  // Enable CORS using URL from .env (FRONTEND_URL)
 
 server.use(loggerMiddleware);  // Middleware to log requests
@@ -69,5 +70,4 @@ energy generation record
 user
 house
 */
-
 
