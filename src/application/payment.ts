@@ -13,7 +13,7 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Stripe configuration missing" });
   }
 
-  // 1. Get invoice (use your existing auth + query patterns)
+  //  Get invoice (use your existing auth + query patterns)
   const invoice = await Invoice.findById(req.body.invoiceId);
 
   if (!invoice) {
@@ -26,7 +26,7 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
 
   const quantity = Math.max(1, Math.ceil(invoice.totalEnergyGenerated || 0));
 
-  // 2. Create Stripe Checkout Session
+  //  Create Stripe Checkout Session
   const session = await stripe.checkout.sessions.create({
       ui_mode: "embedded",
       line_items: [
@@ -42,7 +42,7 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
       },
     });
 
-  // 3. Return client secret to frontend
+  //  Return client secret to frontend
   res.json({ clientSecret: session.client_secret });
 };
 
@@ -54,7 +54,7 @@ export const getSessionStatus = async (req: Request, res: Response) => {
   res.json({
     status: session.status,
     paymentStatus: session.payment_status,
-    amountTotal: session.amount_total,  // Amount in cents
+    amountTotal: session.amount_total, 
   });
 };
 
@@ -62,7 +62,7 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
   const sig = req.headers["stripe-signature"] as string;
   let event: Stripe.Event;
 
-  // 1. Verify webhook signature (SECURITY: proves request is from Stripe)
+  //  Verify webhook signature  proves request is from Stripe)
   try {
     event = stripe.webhooks.constructEvent(
       req.body,  // Must be raw body, not parsed JSON
@@ -74,7 +74,7 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // 2. Handle payment completion
+  // Handle payment completion
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const invoiceId = session.metadata?.invoiceId;
@@ -88,6 +88,6 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
     }
   }
 
-  // 3. Always return 200 to acknowledge receipt
+  //  Always return 200 to acknowledge receipt
   res.status(200).json({ received: true });
 };
