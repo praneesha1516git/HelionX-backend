@@ -49,7 +49,7 @@ server.use("/api/anomalies", anomalyRouter);  // Routes for anomalies - middlewa
 
 server.use("/api/invoices", invoiceRouter);  // Routes for invoices - middleware
 server.use("/api/admin", adminRouter);  // Routes for admin - middleware
-server.use("/api/admin/anomalies", anomalyRouter);  // Routes for admin anomalies - middleware
+// server.use("/api/admin/anomalies", anomalyRouter);  // Routes for admin anomalies - middleware
 server.use("/api/payments", paymentRouter);  // Routes for payments - middleware
 
 server.use(globalErrorHandler);  // no response generated from above router middlewares = Global error handling middleware
