@@ -4,6 +4,27 @@ import { generateInvoices } from "../application/background/generate-invoices";
 import { detectAnomalies } from "../application/background/anomaly-detection";
 
 export const initializeScheduler = () => {
+  // Run an immediate sync so dashboards have data on first load
+  (async () => {
+    try {
+      console.log(
+        `[${new Date().toISOString()}] Running startup energy generation records sync...`
+      );
+      await syncEnergyGenerationRecords();
+      console.log(
+        `[${new Date().toISOString()}] Startup energy records sync completed`
+      );
+
+      // Recalculate anomalies after data is present
+      await detectAnomalies();
+      console.log(
+        `[${new Date().toISOString()}] Startup anomaly detection completed`
+      );
+    } catch (error) {
+      console.error("Error running startup sync tasks:", error);
+    }
+  })();
+
   // Daily sync (00:00 by default, overridable via SYNC_CRON_SCHEDULE)
   const schedule = process.env.SYNC_CRON_SCHEDULE || "0 0 * * *";
   cron.schedule(schedule, async () => {
@@ -43,8 +64,4 @@ export const initializeScheduler = () => {
     }
   });
 
-  // Run anomaly detection once on startup
-  detectAnomalies().catch((err) => {
-    console.error("Error running startup anomaly detection:", err);
-  });
 };
