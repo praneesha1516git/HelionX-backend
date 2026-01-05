@@ -5,6 +5,7 @@ import {Request , Response, NextFunction} from "express";
 import { NotFoundError , ValidationError } from "../domain/errors/errors";
 import { User } from "../infrastructure/entities/User";
 import {getAuth} from "@clerk/express";
+import { Types } from "mongoose";
 
 
 
@@ -117,13 +118,31 @@ export const updateSolarUnit = async (
     throw new NotFoundError("Solar unit not found");
   }
 
-  const updatedSolarUnit = await SolarUnit.findByIdAndUpdate(id, {
-    serialNumber,
-    installationDate,
-    capacity,
-    status,
-    userId,
-  });
+  // Resolve userId to a Mongo ObjectId; allow passing either Mongo _id or Clerk userId
+  let resolvedUserId: Types.ObjectId | undefined;
+  if (userId) {
+    const user = Types.ObjectId.isValid(userId)
+      ? await User.findById(userId)
+      : await User.findOne({ clerkUserId: userId });
+
+    if (!user) {
+      throw new ValidationError("User not found for provided userId");
+    }
+    resolvedUserId = user._id;
+  }
+
+  const updatedSolarUnit = await SolarUnit.findByIdAndUpdate(
+    id,
+    {
+      serialNumber,
+      installationDate,
+      capacity,
+      status,
+      // Only set userId if provided; otherwise preserve existing
+      ...(resolvedUserId ? { userId: resolvedUserId } : {}),
+    },
+    { new: true }
+  );
 
   res.status(200).json(updatedSolarUnit);
 };
@@ -149,7 +168,6 @@ export const deleteSolarUnit = async (req: Request, res: Response) => {
 function next(error: unknown) {
     throw new Error("Function not implemented.");
 }
-
 
 
 
