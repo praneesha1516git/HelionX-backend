@@ -71,16 +71,7 @@ const ensureInvoicesPrimed = async () => {
 export const getAllInvoices = async (req:Request , res: Response , next : NextFunction) => {
     try {
         await ensureInvoicesPrimed();
-        const status = (req.query.status as string | undefined)?.toUpperCase();
-        const filter: Record<string, any> = {};
-        if (status) {
-          if (!["PENDING", "PAID", "FAILED"].includes(status)) {
-            throw new ValidationError("Invalid status filter");
-          }
-          filter.paymentStatus = status;
-        }
-
-        const invoices = await Invoice.find(filter).sort({billingPeriodEnd : -1}).lean();
+        const invoices = await Invoice.find().sort({billingPeriodEnd : -1}).lean();
         const hydrated = await hydrateEnergyTotals(invoices);
         res.status(200).json(hydrated);
     } catch (error) {
@@ -111,20 +102,9 @@ export const getInvoicesForUser = async (req:Request , res: Response , next : Ne
         const userIdObj = new Types.ObjectId(user._id);
          const userIdStr = user._id.toString();
 
-        const status = (req.query.status as string | undefined)?.toUpperCase();
-        const filter: Record<string, any> = {
-          $or: [{ userId: userIdObj }, { userId: userIdStr }],
-        };
-        if (status) {
-          if (!["PENDING", "PAID", "FAILED"].includes(status)) {
-            throw new ValidationError("Invalid status filter");
-          }
-          filter.paymentStatus = status;
-        }
-
-        const userInvoices = await Invoice.find(filter)
-          .sort({ billingPeriodEnd: -1 })
-          .lean();
+     const userInvoices = await Invoice.find({
+        $or: [{ userId: userIdObj }, { userId: userIdStr }],
+        }).sort({ billingPeriodEnd: -1 }).lean();
         const hydrated = await hydrateEnergyTotals(userInvoices);
         res.status(200).json(hydrated);
         console.log("User invoices:", userInvoices); // <-- add this

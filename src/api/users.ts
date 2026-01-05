@@ -5,7 +5,7 @@ import { getAllUsers } from "../application/users";
 
 const usersRouter = express.Router();
 
-usersRouter.route("/").get(authenticationMiddleware, authorizationMiddleware, getAllUsers);
+usersRouter.route("/").get(getAllUsers);
 
 
 
