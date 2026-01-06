@@ -1,10 +1,12 @@
 import {z} from "zod";
 import {CreateSolarUnitDto , UpdateSolarUnitDto } from "../domain/dtos/solar-unit";
 import {SolarUnit} from '../infrastructure/entities/SolarUnit';
+import { Invoice } from "../infrastructure/entities/Invoice";
 import {Request , Response, NextFunction} from "express";
 import { NotFoundError , ValidationError } from "../domain/errors/errors";
 import { User } from "../infrastructure/entities/User";
 import {getAuth} from "@clerk/express";
+import { Types } from "mongoose";
 
 
 
@@ -125,6 +127,13 @@ export const updateSolarUnit = async (
     userId,
   });
 
+  if (userId) {
+    await Invoice.updateMany(
+      { solarUnitId: solarUnit._id },
+      { $set: { userId: new Types.ObjectId(userId) } }
+    );
+  }
+
   res.status(200).json(updatedSolarUnit);
 };
 
@@ -149,7 +158,6 @@ export const deleteSolarUnit = async (req: Request, res: Response) => {
 function next(error: unknown) {
     throw new Error("Function not implemented.");
 }
-
 
 
 
